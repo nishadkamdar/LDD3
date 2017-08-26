@@ -1,0 +1,1 @@
+cmd_/home/nishadkamdar/modules/LDD3/scull_proc/main.ko := ld -r -m elf_i386 -T /usr/src/linux-2.6.32/scripts/module-common.lds --build-id -o /home/nishadkamdar/modules/LDD3/scull_proc/main.ko /home/nishadkamdar/modules/LDD3/scull_proc/main.o /home/nishadkamdar/modules/LDD3/scull_proc/main.mod.o
