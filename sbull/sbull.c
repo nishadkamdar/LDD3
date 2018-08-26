@@ -195,7 +195,7 @@ static int sbull_open(struct block_device *bdev, fmode_t mode)
 	struct sbull_dev *dev = bdev->bd_inode->i_bdev->bd_disk->private_data;
 	printk(KERN_ALERT "Successfully opened device %s\n", dev->gd->disk_name);	
 
-	//del_timer_sync(&dev->timer);
+	del_timer_sync(&dev->timer);
 	spin_lock(&dev->lock);
 	if (! dev->users) 
 		check_disk_change(bdev->bd_inode->i_bdev);
@@ -213,10 +213,10 @@ static void sbull_release(struct gendisk *gd, fmode_t mode)
 	spin_lock(&dev->lock);
 	dev->users--;
 
-	/*if (!dev->users) {
+	if (!dev->users) {
 		dev->timer.expires = jiffies + INVALIDATE_DELAY;
 		add_timer(&dev->timer);
-	}*/
+	}
 	spin_unlock(&dev->lock);
 }
 
@@ -239,6 +239,7 @@ int sbull_revalidate(struct gendisk *gd)
 	struct sbull_dev *dev = gd->private_data;
 	
 	if (dev->media_change) {
+		printk("media changed\n");
 		dev->media_change = 0;
 		memset (dev->data, 0, dev->size);
 	}
@@ -325,8 +326,8 @@ static void setup_device(struct sbull_dev *dev, int which)
 	/*
 	 * The timer which "invalidates" the device.
 	 */
-	//timer_setup(&dev->timer, sbull_invalidate, 0);
-	//printk(KERN_ALERT "timer initialized\n");	
+	timer_setup(&dev->timer, sbull_invalidate, 0);
+	printk(KERN_ALERT "timer initialized\n");	
 	
 	/*
 	 * The I/O queue, depending on whether we are using our own
@@ -409,7 +410,7 @@ static void sbull_exit(void)
 	for (i = 0; i < ndevices; i++) {
 		struct sbull_dev *dev = Devices + i;
 
-		//del_timer_sync(&dev->timer);
+		del_timer_sync(&dev->timer);
 		if (dev->gd) {
 			del_gendisk(dev->gd);
 			put_disk(dev->gd);
