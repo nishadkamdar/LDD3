@@ -1,0 +1,10 @@
+This code is updated to run on 4.17 kernel.
+
+It creates 1 block device sbulla, of size 512K.
+
+In order to compile and load the module,
+> make -C <Compiled kernel source> M=$PWD modules
+> sudo insmod sbull.ko
+
+Test it, by writing zeroes to it using the dd command.
+> dd if=/dev/zero of=/dev/sbulla bs=512 count=9
